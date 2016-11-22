@@ -1,9 +1,7 @@
-import numpy as np
-import matplotlib.pyplot as plt 
 import matplotlib.animation as animation
 import random
 
-#size of the plate
+# size of the plate
 grille = 100
 time = 0
 
@@ -26,6 +24,7 @@ for ligne in range(grille):
             cellule["divide"] = 0
         grid.append(cellule)
 
+
 def tri(data):
     output = []
     for ligne in range(grille):
@@ -40,16 +39,15 @@ def tri(data):
     return output
 
 
-
-
-
 def generation_of_data():
     for cell in grid:
         if cell["value"] == 0:
             for cell_next in grid:
                 if cell_next["value"] > 0 and cell_next["divide"] == 0:
                     if cell_next["ligne"] == cell["ligne"]:
-                        if cell_next["colonne"] - 1 == cell["colonne"] or cell_next["colonne"] + 1 == cell["colonne"] or cell_next["colonne"] == cell["colonne"]:
+                        if cell_next["colonne"] - 1 == cell["colonne"]\
+                           or cell_next["colonne"] + 1 == cell["colonne"]\
+                           or cell_next["colonne"] == cell["colonne"]:
                             if random.random() < 0.9:
                                 cell_next["divide"] = 0
                                 cell["value"] = 1
@@ -57,7 +55,9 @@ def generation_of_data():
                             else:
                                 cell["value"] = 0
                     if cell_next["colonne"] == cell["colonne"]:
-                        if cell_next["ligne"] - 1 == cell["ligne"] or cell_next["ligne"] + 1 == cell["ligne"] or cell_next["ligne"]== cell["ligne"]:
+                        if cell_next["ligne"] - 1 == cell["ligne"]\
+                           or cell_next["ligne"] + 1 == cell["ligne"]\
+                           or cell_next["ligne"] == cell["ligne"]:
                             if random.random() < 0.9:
                                 cell_next["divide"] = 0
                                 cell["value"] = 1
@@ -65,8 +65,12 @@ def generation_of_data():
                             else:
                                 cell["value"] = 0
                     if random.random() < 0.5:
-                        if cell_next["colonne"] - 1 == cell["colonne"] or cell_next["colonne"] + 1 == cell["colonne"] or cell_next["colonne"] == cell["colonne"]:
-                            if cell_next["ligne"] - 1 == cell["ligne"] or cell_next["ligne"] + 1 == cell["ligne"] or cell_next["ligne"]== cell["ligne"]:
+                        if cell_next["colonne"] - 1 == cell["colonne"]\
+                           or cell_next["colonne"] + 1 == cell["colonne"]\
+                           or cell_next["colonne"] == cell["colonne"]:
+                            if cell_next["ligne"] - 1 == cell["ligne"]\
+                               or cell_next["ligne"] + 1 == cell["ligne"]\
+                               or cell_next["ligne"] == cell["ligne"]:
                                 if random.random() < 0.9:
                                     cell_next["divide"] = 0
                                     cell["value"] = 1
@@ -82,13 +86,16 @@ def generation_of_data():
     print("--")
     return output
 
+
 def update(data):
     mat.set_data(data)
-    return mat 
+    return mat
+
 
 def data_gen():
     while True:
         yield generation_of_data()
+
 
 fig, ax = plt.subplots()
 mat = ax.matshow(generation_of_data())
