@@ -1,5 +1,8 @@
 division time ==> 2h for yeasts in YPD, depends medium and mutation
 biodiversity ==> probability of having mutated cells
 mutation rate ==> change rate of diversity
-quantity of antibiotic used
+power of antibiotic ==> represents both efficiency and quantity of antibiotic used
 probability of having a antibioresistant cell ==> could be equal to biodiversity
+life span of cells
+size of cell ==> 0, point-like objects
+medium ==> contains homogeneously the antibiotic can change division time and quantity of antibiotic
