@@ -8,7 +8,7 @@ OFF = 0
 vals = [ON, OFF]
 
 # populate grid with random on/off - more off than on
-grid = np.random.choice(vals, N * N, p=[0.0001, 0.9999]).reshape(N, N)
+grid = np.random.choice(vals, N * N, p=[0.001, 0.999]).reshape(N, N)
 
 
 def update(data):
