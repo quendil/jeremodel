@@ -77,11 +77,10 @@ def update(data):
                     x = np.random.choice([-1, 0, 1])
                     y = np.random.choice([-1, 0])
                     if grid[i + x, j + y] == 1:
-                        pass
+                        continue
                     else:
                         grid[i + x, j + y] = 1
-                        j = 0
-                        pass
+                        break
 
         # exception for first i line
         else:
@@ -133,11 +132,10 @@ def update(data):
                     x = np.random.choice([0, 1])
                     y = np.random.choice([-1, 0])
                     if grid[i + x, j + y] == 1:
-                        pass
+                        continue
                     else:
                         grid[i + x, j + y] = 1
-                        j = 0
-                        pass
+                        break
 
     # exception for last i line
     i = N - 1
@@ -189,11 +187,10 @@ def update(data):
             x = np.random.choice([-1, 0])
             y = np.random.choice([-1, 0])
             if grid[i + x, j + y] == 1:
-                pass
+                continue
             else:
                 grid[i + x, j + y] = 1
-                j = 0
-                pass
+                break
 
     # update counter
     if (len(counter) % 10) == 0:
