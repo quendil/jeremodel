@@ -8,7 +8,7 @@ OFF = 0
 vals = [ON, OFF]
 
 # populate grid with random on/off - more off than on
-grid = np.random.choice(vals, N * N, p=[0.2, 0.8]).reshape(N, N)
+grid = np.random.choice(vals, N * N, p=[0.05, 0.95]).reshape(N, N)
 
 
 def update(data):
@@ -16,22 +16,91 @@ def update(data):
     # copy grid since we require 8 neighbors for calculation
     # and we go line by line
     newGrid = grid.copy()
-    for i in range(N):
-        for j in range(N):
-            # compute 8-neghbor sum
-            # using toroidal boundary conditions - x and y wrap around
-            # so that the simulaton takes place on a toroidal surface.
-            total = (grid[i, (j - 1) % N] + grid[i, (j + 1) % N] +
-                     grid[(i - 1) % N, j] + grid[(i + 1) % N, j] +
-                     grid[(i - 1) % N, (j - 1) % N] + grid[(i - 1) % N, (j + 1) % N] +
-                     grid[(i + 1) % N, (j - 1) % N] + grid[(i + 1) % N, (j + 1) % N]) / 255
-            # apply Conway's rules
-            if grid[i, j] == ON:
-                if (total < 2) or (total > 3):
-                    newGrid[i, j] = OFF
-            else:
-                if total == 3:
-                    newGrid[i, j] = ON
+    for i in range(N - 1):
+        # if not first line normal, if first line don't take into account the i-1 (first line minus one)
+        if i != 0:
+            for j in range(N - 1):
+                # if not first line normal, if first line don't take into account the j-1 (first line minus one)
+                if j != 0:
+                    # compute 8-neighbor sum and divide by 255 to know how many are full
+                    surr = (grid[i, j - 1] + grid[i, j + 1] +
+                            grid[i - 1, j] + grid[i + 1, j] +
+                            grid[i - 1, j - 1] + grid[i - 1, j + 1] +
+                            grid[i + 1, j - 1] + grid[i + 1, j + 1]) / 255
+
+                    # apply Conway's rules
+                    # if case not empty and not surrounded, try to fill on of surrounding, else skip
+                    if (grid[i, j] == ON) or (surr == 8):
+                        continue
+                    else:
+                        x = np.random.choice([-1, 0, 1])
+                        y = np.random.choice([-1, 0, 1])
+                        if grid[i + x, j + y] == ON:
+                            j -= 1
+                            continue
+                        else:
+                            newGrid[i + x, j + y] = ON
+                            continue
+                else:
+                    surr = (grid[i, j + 1] + grid[i - 1, j] + grid[i + 1, j] +
+                            grid[i - 1, j + 1] + grid[i + 1, j + 1]) / 255
+
+                    if grid[i, j] == OFF:
+                        if (surr == 5):
+                            continue
+                        else:
+                            x = np.random.choice([-1, 0, 1])
+                            y = np.random.choice([0, 1])
+                            if grid[i + x, j + y] == ON:
+                                j -= 1
+                                continue
+                            else:
+                                newGrid[i + x, j + y] = ON
+                    else:
+                        continue
+        else:
+            for j in range(N - 1):
+                # if not first line normal, if first line don't take into account the j-1 (first line minus one)
+                if j != 0:
+                    # compute 8-neighbor sum and divide by 255 to know how many are full
+                    surr = (grid[i, j - 1] + grid[i, j + 1] +
+                            grid[i - 1, j] + grid[i + 1, j] +
+                            grid[i - 1, j - 1] + grid[i - 1, j + 1] +
+                            grid[i + 1, j - 1] + grid[i + 1, j + 1]) / 255
+
+                    # apply Conway's rules
+                    # if case not empty and not surrounded, try to fill on of surrounding, else skip
+                    if (grid[i, j] == ON) or (surr == 8):
+                        continue
+                    else:
+                        x = np.random.choice([-1, 0, 1])
+                        y = np.random.choice([-1, 0, 1])
+                        if grid[i + x, j + y] == ON:
+                            j -= 1
+                            continue
+                        else:
+                            newGrid[i + x, j + y] = ON
+                            continue
+
+                else:
+                    surr = (grid[i, j + 1] + grid[i - 1, j] + grid[i + 1, j] +
+                            grid[i - 1, j + 1] + grid[i + 1, j + 1]) / 255
+
+                    if grid[i, j] == OFF:
+                        if (surr == 5):
+                            continue
+                        else:
+                            x = np.random.choice([-1, 0, 1])
+                            y = np.random.choice([0, 1])
+                            if grid[i + x, j + y] == ON:
+                                j -= 1
+                                continue
+                            else:
+                                newGrid[i + x, j + y] = ON
+                    else:
+                        continue
+
+
     # update data
     mat.set_data(newGrid)
     grid = newGrid
@@ -42,5 +111,6 @@ def update(data):
 fig, ax = plt.subplots()
 mat = ax.matshow(grid)
 ani = animation.FuncAnimation(fig, update, interval=50,
-                              save_count=50)
+                              save_count=50, blit=True)
 plt.show()
+# ani.save(filename='anim.mp4', fps=1)
