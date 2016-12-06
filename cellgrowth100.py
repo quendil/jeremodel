@@ -1,14 +1,15 @@
 # import numpy as np
-# import matplotlib.pyplot as plt
-# import matplotlib.animation as anim
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 import random as rand
 
 n_loop = 10         # length of simulation
 n_cell = 1           # initial number of cells
 divTime = 1          # growth rate cells
-gridSize = 24       # size of grid side, square root of possible number of cells
+gridSize = 100       # size of grid side, square root of possible number of cells
 grid = [0 for i in range(gridSize**2)]
 cell = []
+gridPrint = []
 
 # position of all cells on the grid
 for i in range(n_cell):
@@ -23,8 +24,9 @@ for i in range(n_cell):
         continue
 
 
-def cellGrowth():
+def update():
 
+    global grid
     for i in range(len(cell)):
         x1 = cell[i][0]
         x2 = cell[i][0] + 1
@@ -40,7 +42,7 @@ def cellGrowth():
         pos6 = x3 + (y1 * gridSize)
         pos7 = x3 + (y2 * gridSize)
         pos8 = x3 + (y3 * gridSize)
-        # grid1 = 
+        # grid1
         # grid2
         # grid3
         # grid4
@@ -65,13 +67,21 @@ def cellGrowth():
                 continue
         # except IndexError:
         #     continue
+    gridPrint = [grid[n:n + gridSize] for n in range(0, len(grid), gridSize)]
+    mat = mat.set_data(gridPrint)
+    return mat
 
 
-for n in range(n_loop):
-    cellGrowth()
-print(grid)
-print(cell)
+# for n in range(n_loop):
+#     update()
+# print(grid)
+# print(cell)
 
+fig, ax = plt.subplots()
+mat = ax.matshow(gridPrint)
+ani = animation.FuncAnimation(fig, update, interval=50,
+                              save_count=50)
+plt.show()
 
 # def update(data):
 #     mat.set_data(data)
@@ -80,10 +90,10 @@ print(cell)
 
 # def data_gen():
 #     for n in range(n_loop):
-#         yield cellGrowth()
+#         yield update()()
 
 
-# fig, ax = plt.subplots()
-# mat = ax.matshow(cellGrowth())
-# ani = animation.FuncAnimation(fig, update, data_gen, interval=500, save_count=50)
+# fig = plt.matshow(grid)
+# ani = anim.FuncAnimation(fig, update, data_gen, interval=500,
+#                          save_count=50)
 # plt.show()
