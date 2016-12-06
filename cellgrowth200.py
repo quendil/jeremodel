@@ -41,6 +41,7 @@ def update(data):
                         else:
                             newGrid[i + x, j + y] = ON
                             continue
+                # exception if first j line
                 else:
                     surr = (grid[i, j + 1] + grid[i - 1, j] + grid[i + 1, j] +
                             grid[i - 1, j + 1] + grid[i + 1, j + 1]) / 255
@@ -58,6 +59,23 @@ def update(data):
                                 newGrid[i + x, j + y] = ON
                     else:
                         continue
+            # exception if last j line
+            j = N
+            surr = (grid[i, j - 1] + grid[i - 1, j] + grid[i + 1, j] +
+                    grid[i - 1, j - 1] + grid[i + 1, j - 1]) / 255
+            if (grid[i, j] == ON) or (surr == 5):
+                continue
+            else:
+                x = np.random.choice([-1, 0])
+                y = np.random.choice([-1, 0])
+                if grid[i + x, j + y] == ON:
+                    j -= 1
+                    continue
+                else:
+                    newGrid[i + x, j + y] = ON
+                    continue
+
+        # exception for first i line
         else:
             for j in range(N - 1):
                 # if not first line normal, if first line don't take into account the j-1 (first line minus one)
@@ -81,7 +99,7 @@ def update(data):
                         else:
                             newGrid[i + x, j + y] = ON
                             continue
-
+                # exception if first j line
                 else:
                     surr = (grid[i, j + 1] + grid[i - 1, j] + grid[i + 1, j] +
                             grid[i - 1, j + 1] + grid[i + 1, j + 1]) / 255
@@ -99,6 +117,22 @@ def update(data):
                                 newGrid[i + x, j + y] = ON
                     else:
                         continue
+            # exception if last j line
+            j = N
+            surr = (grid[i, j - 1] + grid[i - 1, j] + grid[i + 1, j] +
+                    grid[i - 1, j - 1] + grid[i + 1, j - 1]) / 255
+            if (grid[i, j] == ON) or (surr == 5):
+                continue
+            else:
+                x = np.random.choice([-1, 0])
+                y = np.random.choice([-1, 0])
+                if grid[i + x, j + y] == ON:
+                    j -= 1
+                    continue
+                else:
+                    newGrid[i + x, j + y] = ON
+                    continue
+
 
 
     # update data
