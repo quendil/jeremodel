@@ -1,7 +1,7 @@
 # coding = UTF-8
 # written by Samuel Churlaud - quendil1
 # distributed under license GPL-3.0
-# version 3.1
+# version 3.2
 
 
 import numpy as np
@@ -10,13 +10,13 @@ import matplotlib.animation as animation
 import os.path
 
 
-N = 400              # size of grid side
-n_loop = 200         # number of iterations
-state = [1, -1]       # possible starting state for any position
-prob = 0.01         # probability for a position to be a cell
-counter = []         # progress counter
+N = 400               # size of grid side
+n_loop = 200          # number of iterations
+state = [1, -30]       # possible starting state for any position
+prob = 0.001          # probability for a position to be a cell
+counter = []          # progress counter
 
-diversity = 5           # genetic diversity of the population, the bigger the more diverse (arbitrary unit)
+diversity = 5         # genetic diversity of the population, the bigger the more diverse (arbitrary unit)
 averageRes = 50       # average resistance
 
 
@@ -31,13 +31,8 @@ def cellgrowth(grid):
         i += 1
         for j in range(N - 2):
             j += 1
-            # compute 8-neighbour sum to know how many are full
-            # surr = (grid[i, j - 1] + grid[i, j + 1] +
-            #         grid[i - 1, j] + grid[i + 1, j] +
-            #         grid[i - 1, j - 1] + grid[i - 1, j + 1] +
-            #         grid[i + 1, j - 1] + grid[i + 1, j + 1])
 
-            # if case not empty and not surrounded, try to fill on of surrounding, else skip
+            # if case not empty and not surrounded, try to fill one of the surrounding case, else skip
             if (grid[i, j] < 0) or ((grid[i, j - 1] >= 0) and (grid[i, j - 1] >= 0) and (grid[i - 1, j] >= 0) and
                (grid[i + 1, j] >= 0) and (grid[i - 1, j - 1] >= 0) and (grid[i - 1, j + 1] >= 0) and
                (grid[i + 1, j - 1] >= 0) and (grid[i + 1, j + 1] >= 0)):
@@ -53,20 +48,20 @@ def cellgrowth(grid):
                     continue
 
     # update counter
-    # if (len(counter) % 10) == 0:
-    #     print("progress %.0f%%" % (100. * float(len(counter)) / float(n_loop)))
-    # else:
-    #     pass
-    # counter.append(0)
+    if (len(counter) % 10) == 0:
+        print("progress %.0f%%" % (100. * float(len(counter)) / float(n_loop)))
+    else:
+        pass
+    counter.append(0)
 
     # update data
     mat.set_data(newGrid)
-    # grid = newGrid
     return [mat]
 
 
 grid = np.random.choice(state, N * N, p=[prob, 1 - prob]).reshape(N, N)  # generate grid and populate it
 
+# randomize resistance value for each cell
 for i in range(N):
     for j in range(N):
         if grid[i, j] == 1:
@@ -86,6 +81,5 @@ fig, ax = plt.subplots()
 mat = ax.matshow(grid)
 plt.colorbar(mat)
 ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count=50, blit=True)
-# ani.save('animation.gif', writer='imagemagick', fps=10)
-# ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif', writer='imagemagick', fps=10)
-plt.show()
+ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif', writer='imagemagick', fps=10)
+# plt.show()
