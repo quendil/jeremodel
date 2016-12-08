@@ -1,5 +1,5 @@
 # coding = UTF-8
-# written by Nikola Zarevski and Samuel Churlaud
+# written by Nikola Zarevski (Klaklok) and Samuel Churlaud (quendil1)
 # distributed under license GPL-3.0
 # cells growing on a plate with mutation of the value describing them (here antibioresistance)
 # for JereModel on github.com/quendil1/jeremodel
