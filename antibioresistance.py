@@ -3,7 +3,7 @@
 # distributed under license GPL-3.0
 # cells growing on a plate with mutation of the value describing them (here antibioresistance)
 # for JereModel on github.com/quendil1/jeremodel
-# version 1.0
+# version 1.1
 
 
 import numpy as np
@@ -15,7 +15,7 @@ import os.path
 N = 200                          # size of grid side
 n_loop = 100                     # number of iterations
 emptyValue = -20                 # value for empty case
-deathValue = -10                 # value for case with dead cell in it
+# deathValue = -10                 # value for case with dead cell in it
 state = [1, emptyValue]          # possible starting state for any position
 prob = 0.001                     # probability for a position to be a cell
 mutationRate = 3                 # mutation rate
@@ -23,6 +23,8 @@ counter = []                     # progress counter
 diversity = 5                    # genetic diversity of the population, the bigger the more diverse (arbitrary unit)
 averageRes = 50                  # average resistance
 maxRes = 100                     # maximum resistance for a cell
+deadliness = 50                  # efficiency of antiobiotics
+
 
 # for gif generation, generate file name
 fileNumber = 1
@@ -40,7 +42,7 @@ def cellgrowth(grid):
             j += 1
 
             # if case not empty and not surrounded, try to fill one of the surrounding case, else skip
-            if (grid[i, j] < 0) or ((grid[i, j - 1] >= 0) and (grid[i, j - 1] >= 0) and (grid[i - 1, j] >= 0) and
+            if (grid[i, j] < 0) or ((grid[i, j - 1] >= 0) and (grid[i, j + 1] >= 0) and (grid[i - 1, j] >= 0) and
                (grid[i + 1, j] >= 0) and (grid[i - 1, j - 1] >= 0) and (grid[i - 1, j + 1] >= 0) and
                (grid[i + 1, j - 1] >= 0) and (grid[i + 1, j + 1] >= 0)):
                 continue
@@ -60,13 +62,6 @@ def cellgrowth(grid):
                         newGrid[i + x, j + y] = a
                     continue
 
-    # update counter
-    if (len(counter) % 10) == 0:
-        print("progress %.0f%%" % (100. * float(len(counter)) / float(n_loop)))
-    else:
-        pass
-    counter.append(0)
-
     # update data
     mat.set_data(newGrid)
     return [mat]
@@ -85,8 +80,27 @@ for i in range(N):
                 grid[i, j] = a
 
 
+def antibiotic(grid):
+    for i in range(N):
+        for j in range(N):
+            if grid[i, j] < deadliness:
+                grid[i, j] = emptyValue
+    return grid
+
+
 def update(data):
-    return cellgrowth(grid)
+
+    # update counter
+    if (len(counter) % 10) == 0:
+        print("progress %.0f%%" % (100. * float(len(counter)) / float(n_loop)))
+    else:
+        pass
+    counter.append(0)
+
+    if len(counter) > 20:
+        return cellgrowth(antibiotic(grid))
+    else:
+        return cellgrowth(grid)
 
 
 # set up animation
