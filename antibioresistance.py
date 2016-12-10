@@ -4,7 +4,7 @@
 # cells growing on a plate with mutation of the value describing them (here antibioresistance)
 # adds antiobiotics after given time
 # for JereModel on github.com/quendil1/jeremodel
-# version 1.2
+# version 1.2.1
 
 
 import numpy as np
@@ -28,7 +28,7 @@ averageRes = 300                  # average resistance (must be between 0 and 10
 maxRes = 1000                     # maximum resistance for a cell (whatever)
 
 # antibiotics
-n_antibio = 3                    # number of time antibiotics is put on the system (depends incrDeadliness)
+n_antibio = 0                   # number of time antibiotics is put on the system (depends incrDeadliness)
 deadliness = 300                 # efficiency of antiobiotics at beginning (~< averageRes)
 incrDeadliness = 100             # how much is antibiotic deadliness increased (10 - 30)
 firstAntibio = 30                # number of generations (iteration) before antibiotic is first used (~< 10)
@@ -143,27 +143,41 @@ ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count
 # ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif', writer='imagemagick', fps=10)
 plt.show()
 
-res = []
-g = []
-m = []
+allRes = []
+allCell = []
+
+# Plot the distribution of the resistance in the population
 for i in range(N):
     for j in range(N):
         if grid[i, j] >= 0:
-            res.append(grid[i, j])
-res = sorted(res)
-for i in range(maxRes + 1):
-    if i in res:
-        g.append(res.count(i))
-        m.append(i)
-    else:
-        pass
+            if grid[i, j] in allRes:
+                number = allRes.index(grid[i, j])
+                allCell[number] += 1
+            else:
+                allRes.append(grid[i, j])
+                allRes = sorted(allRes)
+                number = allRes.index(grid[i, j])
+                allCell.append(1)
+        else:
+            pass
 
-plt.plot(m, g)
-plt.show()
+fig = plt.figure()
+ax = fig.add_subplot(211)
+ax.plot(mediumRes, label='evo of average allRes', linestyle='solid', linewidth='2', color='red')
+plt.ylabel('arbitrary unit')
+plt.legend(loc=2, framealpha=0.5)
+ax2 = ax.twinx()
+ax2.plot(population, label='population', linestyle='solid', linewidth='2', color='blue')
+plt.ylabel('n° of individuals')
+plt.legend(loc=1, framealpha=0.5)
+plt.xlabel('iterations')
 
-plt.subplot(211)
-plt.plot(population)
 
 plt.subplot(212)
-plt.plot(mediumRes)
+
+plt.plot(allRes, allCell, label='resistances at the end', linestyle='solid', linewidth='0.5', color='green')
+plt.ylabel('n° of individuals')
+plt.legend(loc=1, framealpha=0.5)
+plt.xlabel('resistance')
+
 plt.show()
