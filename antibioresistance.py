@@ -4,8 +4,8 @@
 # cells growing on a plate with mutation of the value describing them (here antibioresistance)
 # adds antiobiotics after given time
 # for JereModel on github.com/quendil1/jeremodel
-# antibioresistance version 1.2.2
-# based on cellgrowth 3.2.1 for JereModel
+# antibioresistance version 1.2.3
+# based on cellgrowth 3.2.2 for JereModel
 
 
 # import modules
@@ -43,9 +43,14 @@ mediumRes = []                  # list with average resistance at each iteration
 
 
 # generate gif name
-fileNumber = 1
-while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif') is True:
-    fileNumber += 1
+gifNumber = 1
+while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif') is True:
+    gifNumber += 1
+
+# generate png name
+pngNumber = 1
+while os.path.exists('graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png') is True:
+    pngNumber += 1
 
 
 # function for cells growing on the plate, with mutation and hereditary transmission of antibioresistance
@@ -156,9 +161,9 @@ cbar = fig.colorbar(mat, boundaries=list(range(emptyValue, maxRes + 1, 100)))
 cbar.set_clim([emptyValue, maxRes])
 ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count=50, blit=True)
 # save animation as gif
-ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif', writer='imagemagick', fps=10)
+# ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif', writer='imagemagick', fps=10)
 # or show animation
-# plt.show()
+plt.show()
 
 
 # generate lists with all the final resistances
@@ -182,7 +187,7 @@ for i in range(N):
 # plot both average res and population at each iteration
 fig = plt.figure()
 ax = fig.add_subplot(211)
-ax.plot(mediumRes, label='evo of average res', linestyle='solid', linewidth='2', color='red')
+ax.plot(mediumRes, label='average resistance', linestyle='solid', linewidth='2', color='red')
 plt.ylabel('arbitrary unit')
 plt.legend(loc=2, framealpha=0.5)
 ax2 = ax.twinx()
@@ -198,5 +203,8 @@ plt.plot(allRes, allCell, label='resistances at the end', linestyle='solid', lin
 plt.ylabel('n° of individuals')
 plt.legend(loc=1, framealpha=0.5)
 plt.xlabel('resistance')
-
+plt.axis([0, maxRes, 0, max(allCell)])
+# save graphs
+# plt.savefig('graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png')
+# or display them
 plt.show()

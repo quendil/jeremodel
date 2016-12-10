@@ -3,7 +3,7 @@
 # distributed under license GPL-3.0
 # cells growing on a plate with different phenotypes represented by a value
 # for JereModel on github.com/quendil1/jeremodel
-# version 3.2.1
+# version 3.2.2
 
 
 import numpy as np
@@ -22,9 +22,9 @@ diversity = 5          # genetic diversity of the population, the bigger the mor
 averageValue = 50      # average value
 
 
-fileNumber = 1
-while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif') is True:
-    fileNumber += 1
+gifNumber = 1
+while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif') is True:
+    gifNumber += 1
 
 
 def cellgrowth(grid):
@@ -83,5 +83,5 @@ fig, ax = plt.subplots()
 mat = ax.matshow(grid)
 plt.colorbar(mat)
 ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count=50, blit=True)
-# ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif', writer='imagemagick', fps=10)
+# ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif', writer='imagemagick', fps=10)
 plt.show()
