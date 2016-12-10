@@ -32,7 +32,7 @@ maxRes = 1000                   # maximum resistance for a cell (whatever)
 # antibiotics
 n_antibio = 0                   # number of time antibiotics is put on the system (depends incrDeadliness)
 deadliness = 300                # efficiency of antiobiotics at beginning (~< averageRes)
-incrDeadliness = 100            # how much is antibiotic deadliness increased (10 - 30)
+incrDeadliness = 100            # how much is antibiotic deadliness increased (100 - 300)
 firstAntibio = 30               # number of generations (iteration) before antibiotic is first used (~< 10)
 stepAntibio = 20                # number of generations between each increase in antibiotic deadliness (5 - 30, depends mutationRate)
 
