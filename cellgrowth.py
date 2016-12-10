@@ -1,9 +1,9 @@
 # coding = UTF-8
 # written by Samuel Churlaud - quendil1
 # distributed under license GPL-3.0
-# cells growing on a plate
+# cells growing on a plate with different phenotypes represented by a value
 # for JereModel on github.com/quendil1/jeremodel
-# version 3.2
+# version 3.2.1
 
 
 import numpy as np
@@ -12,14 +12,14 @@ import matplotlib.animation as animation
 import os.path
 
 
-N = 400               # size of grid side
-n_loop = 200          # number of iterations
-state = [1, -30]      # possible starting state for any position
-prob = 0.001          # probability for a position to be a cell
-counter = []          # progress counter
+N = 200                # size of grid side
+n_loop = 200           # number of iterations
+state = [1, -30]       # possible starting state for any position
+prob = 0.001           # probability for a position to be a cell
+counter = []           # progress counter
 
-diversity = 5         # genetic diversity of the population, the bigger the more diverse (arbitrary unit)
-averageRes = 50       # average resistance
+diversity = 5          # genetic diversity of the population, the bigger the more diverse (arbitrary unit)
+averageValue = 50      # average value
 
 
 fileNumber = 1
@@ -35,7 +35,7 @@ def cellgrowth(grid):
             j += 1
 
             # if case not empty and not surrounded, try to fill one of the surrounding case, else skip
-            if (grid[i, j] < 0) or ((grid[i, j - 1] >= 0) and (grid[i, j - 1] >= 0) and (grid[i - 1, j] >= 0) and
+            if (grid[i, j] < 0) or ((grid[i, j - 1] >= 0) and (grid[i, j + 1] >= 0) and (grid[i - 1, j] >= 0) and
                (grid[i + 1, j] >= 0) and (grid[i - 1, j - 1] >= 0) and (grid[i - 1, j + 1] >= 0) and
                (grid[i + 1, j - 1] >= 0) and (grid[i + 1, j + 1] >= 0)):
                 continue
@@ -63,11 +63,11 @@ def cellgrowth(grid):
 
 grid = np.random.choice(state, N * N, p=[prob, 1 - prob]).reshape(N, N)  # generate grid and populate it
 
-# randomize resistance value for each cell
+# randomize value for each cell
 for i in range(N):
     for j in range(N):
         if grid[i, j] == 1:
-            a = abs(np.random.normal(averageRes, diversity))
+            a = abs(np.random.normal(averageValue, diversity))
             if (a > 100) or (a < 0):
                 j -= 1
             else:
@@ -83,5 +83,5 @@ fig, ax = plt.subplots()
 mat = ax.matshow(grid)
 plt.colorbar(mat)
 ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count=50, blit=True)
-ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif', writer='imagemagick', fps=10)
-# plt.show()
+# ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(fileNumber) + '.gif', writer='imagemagick', fps=10)
+plt.show()
