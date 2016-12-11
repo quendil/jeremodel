@@ -16,25 +16,25 @@ import os.path
 
 
 # plate
-N = 200                         # size of grid side (100 - 400)
-n_loop = 100                    # number of iterations (~1.5 times N)
+N = 1000                         # size of grid side (100 - 400)
+n_loop = 1000                    # number of iterations (~1.5 times N)
 emptyValue = -200               # value for empty case (> -100, must be > 0)
 state = [1, emptyValue]         # possible starting state for any position ([1, emptyValue])
 prob = 0.001                    # probability for a position to be a cell (0.01 - 0.00001)
 
 # genetics
-mutationRate = 30               # mutation rate (1 - 3)
-counterpart = 0.9               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
+mutationRate = 30               # mutation rate (10 - 30)
+counterpart = 0.5               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
 diversity = 50                  # genetic diversity of the population, the bigger the more diverse (arbitrary unit) (10 - 100)
-averageRes = 300                # average resistance (must be between 0 and 1000)
+averageRes = 200                # average resistance (must be between 0 and 1000)
 maxRes = 1000                   # maximum resistance for a cell (whatever)
 
 # antibiotics
-n_antibio = 0                   # number of time antibiotics is put on the system (depends incrDeadliness)
-deadliness = 300                # efficiency of antiobiotics at beginning (~< averageRes)
-incrDeadliness = 100            # how much is antibiotic deadliness increased (100 - 300)
-firstAntibio = 30               # number of generations (iteration) before antibiotic is first used (~< 10)
-stepAntibio = 20                # number of generations between each increase in antibiotic deadliness (5 - 30, depends mutationRate)
+n_antibio = 3                   # number of time antibiotics is put on the system (depends incrDeadliness)
+deadliness = 200                # efficiency of antiobiotics at beginning (~< averageRes)
+incrDeadliness = 150            # how much is antibiotic deadliness increased (100 - 300)
+firstAntibio = 50               # number of generations (iteration) before antibiotic is first used (~< 10)
+stepAntibio = 100               # number of generations between each increase in antibiotic deadliness (50 - 300, depends mutationRate)
 
 # code
 counter = []                    # progress counter
