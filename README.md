@@ -3,7 +3,7 @@ Model for antibioresistance in an heterogenous population of microbes.
 
 Depends :
 - python3 (and dependencies)
-- python-tk
+- python3-tk
 
 Python modules :
 - matplotlib
