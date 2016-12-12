@@ -5,7 +5,7 @@
 # adds antiobiotics after given time
 # for JereModel on github.com/quendil1/jeremodel
 # antibioresistance version 1.2.4
-# based on cellgrowth 3.2.2 for JereModel
+# based on cellgrowth 3.2.3 for JereModel
 
 
 # import modules
@@ -17,7 +17,7 @@ import os.path
 
 # plate
 N = 200                         # size of grid side (100 - 400 for fast simulations)
-n_loop = 300                    # number of iterations (~=N)
+n_loop = 100                    # number of iterations (~=N)
 emptyValue = -200               # value for empty case (> -100, must be > 0)
 state = [1, emptyValue]         # possible starting state for any position ([1, emptyValue])
 prob = 0.001                    # probability for a position to be a cell (0.01 - 0.00001)
@@ -30,7 +30,7 @@ averageRes = 200                # average resistance (must be between 0 and 1000
 maxRes = 1000                   # maximum resistance for a cell (whatever)
 
 # antibiotics
-n_antibio = 3                   # number of time antibiotics is put on the system (depends incrDeadliness)
+n_antibio = 0                   # number of time antibiotics is put on the system (depends incrDeadliness)
 deadliness = 450                # efficiency of antiobiotics at beginning (~< averageRes)
 incrDeadliness = 50            # how much is antibiotic deadliness increased (100 - 300)
 firstAntibio = 40               # number of generations (iteration) before antibiotic is first used (~< 10)
@@ -40,13 +40,13 @@ stepAntibio = 30               # number of generations between each increase in 
 counter = []                    # progress counter
 population = []                 # list with number of cells at each iteration
 mediumRes = []                  # list with average resistance at each iteration
-savePlot = False                 # save gif or show grid, boolean
+savePlot = True                 # save mp4 and graphs or show grid then graphs, boolean
 
 
-# generate gif name
-gifNumber = 1
-while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif') is True:
-    gifNumber += 1
+# generate mp4 name
+videoNumber = 1
+while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4') is True:
+    videoNumber += 1
 
 # generate png name
 pngNumber = 1
@@ -111,7 +111,7 @@ def antibiotic(grid):
 def update(data):
 
     # update counter
-    if (len(counter) % 10) == 0:
+    if (len(counter) % 20) == 0:
         print("progress %.0f%%" % (100. * float(len(counter)) / float(n_loop)))
     else:
         pass
@@ -169,8 +169,8 @@ cbar = fig.colorbar(mat, boundaries=list(range(emptyValue, maxRes + 1, 100)))
 cbar.set_clim([emptyValue, maxRes])
 ani = animation.FuncAnimation(fig, update, event_source=None, frames=n_loop, interval=1, save_count=50, blit=True)
 if savePlot is True:
-    # save animation as gif
-    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif', writer='imagemagick', fps=10)
+    # save animation as mp4
+    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4', writer='imagemagick', fps=24)
 else:
     # or show animation
     plt.show()
