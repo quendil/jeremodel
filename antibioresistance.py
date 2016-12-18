@@ -16,24 +16,24 @@ import os.path
 
 
 # plate
-N = 1000                         # size of grid side (100 - 400)
-n_loop = 1000                    # number of iterations (~1.5 times N)
+N = 200                         # size of grid side (100 - 400)
+n_loop = 1000                   # number of iterations (~1.5 times N)
 emptyValue = -200               # value for empty case (> -100, must be > 0)
 state = [1, emptyValue]         # possible starting state for any position ([1, emptyValue])
 prob = 0.001                    # probability for a position to be a cell (0.01 - 0.00001)
 
 # genetics
 mutationRate = 30               # mutation rate (10 - 30)
-counterpart = 0.5               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
+counterpart = 0.9               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
 diversity = 50                  # genetic diversity of the population, the bigger the more diverse (arbitrary unit) (10 - 100)
-averageRes = 200                # average resistance (must be between 0 and 1000)
+averageRes = 500                # average resistance (must be between 0 and 1000)
 maxRes = 1000                   # maximum resistance for a cell (whatever)
 
 # antibiotics
 n_antibio = 3                   # number of time antibiotics is put on the system (depends incrDeadliness)
-deadliness = 200                # efficiency of antiobiotics at beginning (~< averageRes)
+deadliness = 500                # efficiency of antiobiotics at beginning (~< averageRes)
 incrDeadliness = 150            # how much is antibiotic deadliness increased (100 - 300)
-firstAntibio = 50               # number of generations (iteration) before antibiotic is first used (~< 10)
+firstAntibio = 100               # number of generations (iteration) before antibiotic is first used (~< 10)
 stepAntibio = 100               # number of generations between each increase in antibiotic deadliness (50 - 300, depends mutationRate)
 
 # code
