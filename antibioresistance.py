@@ -4,8 +4,8 @@
 # cells growing on a plate with mutation of the value describing them (here antibioresistance)
 # adds antiobiotics after given time
 # for JereModel on github.com/quendil1/jeremodel
-# antibioresistance version 1.2.3
-# based on cellgrowth 3.2.2 for JereModel
+# antibioresistance version 1.2.4
+# based on cellgrowth 3.2.3 for JereModel
 
 
 # import modules
@@ -16,36 +16,55 @@ import os.path
 
 
 # plate
+<<<<<<< HEAD
 N = 200                         # size of grid side (100 - 400)
 n_loop = 1000                   # number of iterations (~1.5 times N)
+=======
+N = 200                         # size of grid side (100 - 400 for fast simulations)
+n_loop = 100                    # number of iterations (~=N)
+>>>>>>> 0ae19c7d63252b79378b730960b3524ffaefdb90
 emptyValue = -200               # value for empty case (> -100, must be > 0)
 state = [1, emptyValue]         # possible starting state for any position ([1, emptyValue])
 prob = 0.001                    # probability for a position to be a cell (0.01 - 0.00001)
 
 # genetics
+<<<<<<< HEAD
 mutationRate = 30               # mutation rate (10 - 30)
 counterpart = 0.9               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
+=======
+mutationRate = 15               # mutation rate (10 - 30)
+counterpart = 0.5               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
+>>>>>>> 0ae19c7d63252b79378b730960b3524ffaefdb90
 diversity = 50                  # genetic diversity of the population, the bigger the more diverse (arbitrary unit) (10 - 100)
 averageRes = 500                # average resistance (must be between 0 and 1000)
 maxRes = 1000                   # maximum resistance for a cell (whatever)
 
 # antibiotics
+<<<<<<< HEAD
 n_antibio = 3                   # number of time antibiotics is put on the system (depends incrDeadliness)
 deadliness = 500                # efficiency of antiobiotics at beginning (~< averageRes)
 incrDeadliness = 150            # how much is antibiotic deadliness increased (100 - 300)
 firstAntibio = 100               # number of generations (iteration) before antibiotic is first used (~< 10)
 stepAntibio = 100               # number of generations between each increase in antibiotic deadliness (50 - 300, depends mutationRate)
+=======
+n_antibio = 0                   # number of time antibiotics is put on the system (depends incrDeadliness)
+deadliness = 450                # efficiency of antiobiotics at beginning (~< averageRes)
+incrDeadliness = 50            # how much is antibiotic deadliness increased (100 - 300)
+firstAntibio = 40               # number of generations (iteration) before antibiotic is first used (~< 10)
+stepAntibio = 30               # number of generations between each increase in antibiotic deadliness (50 - 300, depends mutationRate)
+>>>>>>> 0ae19c7d63252b79378b730960b3524ffaefdb90
 
 # code
 counter = []                    # progress counter
 population = []                 # list with number of cells at each iteration
 mediumRes = []                  # list with average resistance at each iteration
+savePlot = True                 # save mp4 and graphs or show grid then graphs, boolean
 
 
-# generate gif name
-gifNumber = 1
-while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif') is True:
-    gifNumber += 1
+# generate mp4 name
+videoNumber = 1
+while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4') is True:
+    videoNumber += 1
 
 # generate png name
 pngNumber = 1
@@ -70,7 +89,7 @@ def cellgrowth(grid):
                 continue
             else:
                 # the bigger the counterpart and resistance, the less likely to divide
-                if np.random.random() > ((grid[i, j] / 1000) * counterpart):
+                if np.random.random() > ((grid[i, j] / maxRes) * counterpart):
                     # generate position of daughter cell compared to mother cell
                     x = np.random.choice([-1, 0, 1])
                     y = np.random.choice([-1, 0, 1])
@@ -110,7 +129,7 @@ def antibiotic(grid):
 def update(data):
 
     # update counter
-    if (len(counter) % 10) == 0:
+    if (len(counter) % 20) == 0:
         print("progress %.0f%%" % (100. * float(len(counter)) / float(n_loop)))
     else:
         pass
@@ -124,9 +143,13 @@ def update(data):
             if grid[i, j] >= 0:
                 n += 1
                 res += grid[i, j]
-    population.append(n)
-    a = (res / n)
-    mediumRes.append(a)
+    if n == 0:
+        mat.set_data(emptyGrid)
+        return [mat]
+    else:
+        population.append(n)
+        a = (res / n)
+        mediumRes.append(a)
 
     # increase antibiotics every stepAntibio
     global deadliness
@@ -141,6 +164,9 @@ def update(data):
 
 # generate grid and populate it
 grid = np.random.choice(state, N * N, p=[prob, 1 - prob]).reshape(N, N)
+
+# template empty grid
+emptyGrid = np.random.choice(state, N * N, p=[0, 1]).reshape(N, N)
 
 
 # randomize resistance value for each cell
@@ -159,11 +185,13 @@ fig, ax = plt.subplots()
 mat = ax.matshow(grid)
 cbar = fig.colorbar(mat, boundaries=list(range(emptyValue, maxRes + 1, 100)))
 cbar.set_clim([emptyValue, maxRes])
-ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count=50, blit=True)
-# save animation as gif
-# ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif', writer='imagemagick', fps=10)
-# or show animation
-plt.show()
+ani = animation.FuncAnimation(fig, update, event_source=None, frames=n_loop, interval=1, save_count=50, blit=True)
+if savePlot is True:
+    # save animation as mp4
+    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4', writer='imagemagick', fps=24)
+else:
+    # or show animation
+    plt.show()
 
 
 # generate lists with all the final resistances
@@ -199,12 +227,14 @@ plt.xlabel('iterations')
 
 # plot with all resistances at the end
 plt.subplot(212)
-plt.plot(allRes, allCell, label='resistances at the end', linestyle='solid', linewidth='0.5', color='green')
+plt.plot(allRes, allCell, label='resistances at the end', linestyle='solid', linewidth='3', color='green')
 plt.ylabel('n° of individuals')
 plt.legend(loc=1, framealpha=0.5)
 plt.xlabel('resistance')
 plt.axis([0, maxRes, 0, max(allCell)])
-# save graphs
-# plt.savefig('graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png')
-# or display them
-plt.show()
+if savePlot is True:
+    # save graphs
+    plt.savefig('graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png')
+else:
+    # or display them
+    plt.show()
