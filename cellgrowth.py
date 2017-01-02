@@ -85,6 +85,6 @@ mat = ax.matshow(grid)
 plt.colorbar(mat)
 ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count=50, blit=True)
 if savePlot is True:
-    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif', writer='imagemagick', fps=10)
+    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif', writer='ffmpeg', fps=24)
 else:
     plt.show()
