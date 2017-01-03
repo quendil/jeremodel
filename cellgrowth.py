@@ -3,88 +3,197 @@
 # distributed under license GPL-3.0
 # cells growing on a plate with different phenotypes represented by a value
 # for JereModel on github.com/quendil1/jeremodel
-# version 3.2.3
+# version 4.0.0
 
 
+# import modules
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import os.path
+import os
 
 
-N = 200                # size of grid side
-n_loop = 200           # number of iterations
-state = [1, -30]       # possible starting state for any position
-prob = 0.001           # probability for a position to be a cell
-counter = []           # progress counter
+# plate
+N = 200                         # size of grid side (100 - 400)
+n_loop = 400                   # number of iterations (~1.5 times N)
+emptyValue = -200               # value for empty case (> -100, must be > 0)
+state = [1, emptyValue]         # possible starting state for any position ([1, emptyValue])
+prob = 0.001                    # probability for a position to be a cell (0.01 - 0.00001)
 
-diversity = 5          # genetic diversity of the population, the bigger the more diverse (arbitrary unit)
-averageValue = 50      # average value
-savePlot = True        # save mp4 and graphs or show grid then graphs, boolean
+# genetics
+mutationRate = 30               # mutation rate (10 - 30)
+counterpart = 0.9               # how much is cell growth slowed down because of phenotype (must be between 0 and 1)
+diversity = 50                  # genetic diversity of the population, the bigger the more diverse (arbitrary unit) (10 - 100)
+averagePhenotype = 900          # average phenotype (must be between 0 and 1000)
+maxPhenotype = 1000             # maximum phenotype for a cell (whatever)
+
+# code
+counter = []                    # progress counter
+population = []                 # list with number of cells at each iteration
+mediumPhenotype = []            # list with average phenotype at each iteration
+savePlot = True                 # save mp4 and graphs or show grid then graphs, boolean
 
 
-gifNumber = 1
-while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif') is True:
-    gifNumber += 1
+# generate mp4 name
+videoNumber = 1
+while os.path.exists('plots/animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4') is True:
+    videoNumber += 1
+
+# generate png name
+pngNumber = 1
+while os.path.exists('plots/graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png') is True:
+    pngNumber += 1
 
 
+# function for cells growing on the plate, with mutation and hereditary transmission of phenotypes
 def cellgrowth(grid):
-    newGrid = grid
+    # generate growth of cells on the plate, with mutation
+    newGrid = grid    # copy grid
+
     for i in range(N - 2):
         i += 1
         for j in range(N - 2):
             j += 1
 
-            # if case not empty and not surrounded, try to fill one of the surrounding case, else skip
+            # if case empty or surrounded, skip, else try to fill one the empty surrounding cases
             if (grid[i, j] < 0) or ((grid[i, j - 1] >= 0) and (grid[i, j + 1] >= 0) and (grid[i - 1, j] >= 0) and
                (grid[i + 1, j] >= 0) and (grid[i - 1, j - 1] >= 0) and (grid[i - 1, j + 1] >= 0) and
                (grid[i + 1, j - 1] >= 0) and (grid[i + 1, j + 1] >= 0)):
                 continue
             else:
-                x = np.random.choice([-1, 0, 1])
-                y = np.random.choice([-1, 0, 1])
-                if grid[i + x, j + y] >= 0:
-                    j -= 1
-                    continue
+                # the bigger the counterpart and phenotype, the less likely to divide (see counterpart)
+                if np.random.random() > ((grid[i, j] / maxPhenotype) * counterpart):
+                    # generate position of daughter cell compared to mother cell
+                    x = np.random.choice([-1, 0, 1])
+                    y = np.random.choice([-1, 0, 1])
+                    # check if case not already full
+                    if grid[i + x, j + y] >= 0:
+                        j -= 1
+                        continue
+                    else:
+                        # generate phenotype of daughter cell (taking into account mutations)
+                        a = grid[i, j] + np.random.normal(0, mutationRate)
+                        # if generated phenotype higher than max or lower than min, attribute max or min, else proceed normally
+                        if a < 0:
+                            newGrid[i + x, j + y] = 0
+                        if a > maxPhenotype:
+                            newGrid[i + x, j + y] = maxPhenotype
+                        else:
+                            newGrid[i + x, j + y] = a
+                        continue
                 else:
-                    newGrid[i + x, j + y] = grid[i, j]
                     continue
 
+    # return plottable data for animation
+    mat.set_data(newGrid)
+    return [mat]
+
+
+# iteration function
+def update(data):
+
     # update counter
-    if (len(counter) % 10) == 0:
+    if (len(counter) % 20) == 0:
         print("progress %.0f%%" % (100. * float(len(counter)) / float(n_loop)))
     else:
         pass
     counter.append(0)
 
-    # update data
-    mat.set_data(newGrid)
-    return [mat]
+    # append average phenotype to mediumPhenotype and number of cells to population
+    n = 0
+    phen = 0
+    for i in range(N):
+        for j in range(N):
+            if grid[i, j] >= 0:
+                n += 1
+                phen += grid[i, j]
+    if n == 0:
+        mat.set_data(emptyGrid)
+        return [mat]
+    else:
+        population.append(n)
+        a = (phen / n)
+        mediumPhenotype.append(a)
+
+    return cellgrowth(grid)
 
 
-grid = np.random.choice(state, N * N, p=[prob, 1 - prob]).reshape(N, N)  # generate grid and populate it
+# generate grid and populate it
+grid = np.random.choice(state, N * N, p=[prob, 1 - prob]).reshape(N, N)
 
-# randomize value for each cell
+# empty grid template
+emptyGrid = np.random.choice(state, N * N, p=[0, 1]).reshape(N, N)
+
+
+# randomize phenotype value for each cell
 for i in range(N):
     for j in range(N):
         if grid[i, j] == 1:
-            a = abs(np.random.normal(averageValue, diversity))
-            if (a > 100) or (a < 0):
+            a = abs(np.random.normal(averagePhenotype, diversity))
+            if (a > maxPhenotype) or (a < 0):
                 j -= 1
             else:
                 grid[i, j] = a
 
 
-def update(data):
-    return cellgrowth(grid)
-
-
 # set up animation
 fig, ax = plt.subplots()
 mat = ax.matshow(grid)
-plt.colorbar(mat)
-ani = animation.FuncAnimation(fig, update, frames=n_loop, interval=1, save_count=50, blit=True)
+cbar = fig.colorbar(mat, boundaries=list(range(emptyValue, maxPhenotype + 1, 100)))
+cbar.set_clim([emptyValue, maxPhenotype])
+ani = animation.FuncAnimation(fig, update, event_source=None, frames=n_loop, interval=1, save_count=50, blit=True)
 if savePlot is True:
-    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(gifNumber) + '.gif', writer='ffmpeg', fps=24)
+    # save animation as mp4
+    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4', writer='ffmpeg', codec='libx264', fps=12)
+    # change video location as it was not saved in plot (due to limitations with matplotlib.animation)
+    os.rename('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4',
+              'plots/animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4')
 else:
+    # show animation
+    plt.show()
+
+# generate lists with all the final phenotypes
+allPhenotypes = []      # list with all phenotype values at the end
+allCell = []            # list with number of cells for each phenotype value
+
+for i in range(N):
+    for j in range(N):
+        if grid[i, j] >= 0:
+            if grid[i, j] in allPhenotypes:
+                number = allPhenotypes.index(grid[i, j])
+                allCell[number] += 1
+            else:
+                allPhenotypes.append(grid[i, j])
+                allPhenotypes = sorted(allPhenotypes)
+                number = allPhenotypes.index(grid[i, j])
+                allCell.append(1)
+        else:
+            pass
+
+# plot both average phenotype and population at each iteration
+fig = plt.figure()
+ax = fig.add_subplot(211)
+ax.plot(mediumPhenotype, label='average phenotype', linestyle='solid', linewidth='2', color='red')
+plt.ylabel('arbitrary unit')
+plt.legend(loc=2, framealpha=0.5)
+ax2 = ax.twinx()
+ax2.plot(population, label='population', linestyle='solid', linewidth='2', color='blue')
+plt.ylabel('n° of cells')
+plt.legend(loc=1, framealpha=0.5)
+plt.xlabel('iterations')
+
+
+# plot with all phenotypes at the end
+plt.subplot(212)
+plt.plot(allPhenotypes, allCell, label='phenotypes at the end', linestyle='solid', linewidth='3', color='green')
+plt.ylabel('n° of individuals')
+plt.legend(loc=1, framealpha=0.5)
+plt.xlabel('resistance')
+plt.axis([0, maxPhenotype, 0, max(allCell)])
+if savePlot is True:
+    # save graphs
+    plt.savefig('plots/graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png')
+else:
+    # or display them
     plt.show()

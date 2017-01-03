@@ -4,8 +4,8 @@
 # cells growing on a plate with mutation of the value describing them (here antibioresistance)
 # adds antiobiotics after given time
 # for JereModel on github.com/quendil1/jeremodel
-# antibioresistance version 1.2.4
-# based on cellgrowth 3.2.3 for JereModel
+# antibioresistance version 1.2.5
+# based on cellgrowth 4.0.0 for JereModel
 
 
 # import modules
@@ -17,16 +17,12 @@ import os.path
 
 # plate
 N = 200                         # size of grid side (100 - 400)
-n_loop = 1000                   # number of iterations (~1.5 times N)
-N = 200                         # size of grid side (100 - 400 for fast simulations)
-n_loop = 100                    # number of iterations (~=N)
+n_loop = 500                   # number of iterations (~1.5 times N)
 emptyValue = -200               # value for empty case (> -100, must be > 0)
 state = [1, emptyValue]         # possible starting state for any position ([1, emptyValue])
 prob = 0.001                    # probability for a position to be a cell (0.01 - 0.00001)
 
 # genetics
-mutationRate = 30               # mutation rate (10 - 30)
-counterpart = 0.9               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
 mutationRate = 15               # mutation rate (10 - 30)
 counterpart = 0.5               # how much is cell growth slowed down because of antibioresistance (must be between 0 and 1)
 diversity = 50                  # genetic diversity of the population, the bigger the more diverse (arbitrary unit) (10 - 100)
@@ -34,32 +30,27 @@ averageRes = 500                # average resistance (must be between 0 and 1000
 maxRes = 1000                   # maximum resistance for a cell (whatever)
 
 # antibiotics
-n_antibio = 3                   # number of time antibiotics is put on the system (depends incrDeadliness)
+n_antibio = 1                   # number of time antibiotics is put on the system (depends incrDeadliness)
 deadliness = 500                # efficiency of antiobiotics at beginning (~< averageRes)
 incrDeadliness = 150            # how much is antibiotic deadliness increased (100 - 300)
 firstAntibio = 100               # number of generations (iteration) before antibiotic is first used (~< 10)
 stepAntibio = 100               # number of generations between each increase in antibiotic deadliness (50 - 300, depends mutationRate)
-n_antibio = 0                   # number of time antibiotics is put on the system (depends incrDeadliness)
-deadliness = 450                # efficiency of antiobiotics at beginning (~< averageRes)
-incrDeadliness = 50            # how much is antibiotic deadliness increased (100 - 300)
-firstAntibio = 40               # number of generations (iteration) before antibiotic is first used (~< 10)
-stepAntibio = 30               # number of generations between each increase in antibiotic deadliness (50 - 300, depends mutationRate)
 
 # code
 counter = []                    # progress counter
 population = []                 # list with number of cells at each iteration
 mediumRes = []                  # list with average resistance at each iteration
-savePlot = True                 # save mp4 and graphs or show grid then graphs, boolean
+savePlot = False                 # save mp4 and graphs or show grid then graphs, boolean
 
 
 # generate mp4 name
 videoNumber = 1
-while os.path.exists('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4') is True:
+while os.path.exists('plots/animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4') is True:
     videoNumber += 1
 
 # generate png name
 pngNumber = 1
-while os.path.exists('graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png') is True:
+while os.path.exists('plots/graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png') is True:
     pngNumber += 1
 
 
@@ -79,7 +70,7 @@ def cellgrowth(grid):
                (grid[i + 1, j - 1] >= 0) and (grid[i + 1, j + 1] >= 0)):
                 continue
             else:
-                # the bigger the counterpart and resistance, the less likely to divide
+                # the bigger the counterpart and resistance, the less likely to divide (see counterpart)
                 if np.random.random() > ((grid[i, j] / maxRes) * counterpart):
                     # generate position of daughter cell compared to mother cell
                     x = np.random.choice([-1, 0, 1])
@@ -156,7 +147,7 @@ def update(data):
 # generate grid and populate it
 grid = np.random.choice(state, N * N, p=[prob, 1 - prob]).reshape(N, N)
 
-# template empty grid
+# empty grid template
 emptyGrid = np.random.choice(state, N * N, p=[0, 1]).reshape(N, N)
 
 
@@ -179,9 +170,12 @@ cbar.set_clim([emptyValue, maxRes])
 ani = animation.FuncAnimation(fig, update, event_source=None, frames=n_loop, interval=1, save_count=50, blit=True)
 if savePlot is True:
     # save animation as mp4
-    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4', writer='ffmpeg', fps=24)
+    ani.save('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4', writer='ffmpeg', codec='libx264', fps=24)
+    # change video location as it was not saved in plot (due to limitations with matplotlib.animation)
+    os.rename('animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4',
+              'plots/animation' + str(N) + '_' + str(n_loop) + '_' + str(videoNumber) + '.mp4')
 else:
-    # or show animation
+    # show animation
     plt.show()
 
 
@@ -225,7 +219,7 @@ plt.xlabel('resistance')
 plt.axis([0, maxRes, 0, max(allCell)])
 if savePlot is True:
     # save graphs
-    plt.savefig('graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png')
+    plt.savefig('plots/graph' + str(N) + '_' + str(n_loop) + '_' + str(pngNumber) + '.png')
 else:
     # or display them
     plt.show()
