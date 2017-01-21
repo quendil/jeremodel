@@ -4,9 +4,11 @@ Model for antibioresistance in an heterogenous population of microbes.
 Dependencies :
 - ffmpeg
 - python3
+- python3-matplotlib
+- python3-numpy
 - python3-tk
 
-Python modules :
+Python modules used :
 - matplotlib
 - numpy
 - os
