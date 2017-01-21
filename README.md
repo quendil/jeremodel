@@ -4,7 +4,7 @@ Model for antibioresistance in an heterogenous population of microbes.
 Dependencies :
 - ffmpeg
 - python3
-- python3-matplotlib
+- python3-matplotlib  =<1.53    doesn't work with 2.0 version that came out a few weeks ago, thanks matplotlib x(
 - python3-numpy
 - python3-tk
 
