@@ -1,7 +1,9 @@
 # jeremodel
 Model for antibioresistance in an heterogenous population of microbes.
 
-Dependencies (for GNU/Linux, haven't tried on other OS) :
+I guess it should work on any OS, but I have only tried on GNU/Linux.
+
+Dependencies (for GNU/Linux) :
 - ffmpeg
 - python3
 - python3-matplotlib
